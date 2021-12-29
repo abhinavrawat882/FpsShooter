@@ -3,7 +3,6 @@
 ###########################################
 GameResolution=[1280,720]
 import pygame
-import Beast_Engine.beast as be
 from Assets import mainMenue
 import game
 import os
