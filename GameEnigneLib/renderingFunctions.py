@@ -246,11 +246,11 @@ def lineTracerp(x, y, lineAngle, Levelmap):  # 4.0
     return lineLen,intercept,x,y
 
 
-def threDRenderer(x, y, a, surface, mp, pygame):
+def threDRenderer(x, y, a, surface, mp, pygame,gr,FOV):
     # Define Variable :-
-    gh = 480
-    gw = 480
-    FOV = 44
+    gh = gr[1]
+    gw = gr[0]
+    
     
     EndAngle = ac.giveAbsAngle(a+FOV)
     naea=a+FOV
@@ -262,7 +262,7 @@ def threDRenderer(x, y, a, surface, mp, pygame):
     #             FRAME DRAWING
     ###########################################
 
-    for i in range(0, 480):
+    for i in range(0, gw):
 
         ###########################################
         # .    Get line length
@@ -317,24 +317,28 @@ def threDRenderer(x, y, a, surface, mp, pygame):
 # 2D Engine
 
 
-def miniMapRenderer(screen2d, x, y, a, pygame, mp,sx,sy):
-
+def miniMapRenderer(screen2d, x, y, a, pygame, mp,gr,mmr):
+    mml=10
     ################################
     #       RENDER MAP
     ################################
-    factor = 480/16
-    for i in range(len(mp)):
-        for j in range(len(mp)):
-            if(mp[i][j] == 1):
-                pygame.draw.rect(screen2d, (10, 10, 255), pygame.Rect(
-                    j*factor, i*factor, factor, factor))
+    factor = mmr[0]/mml
+    x1,y1=ac.CorToMat(int(x),int(y),len(mp))
+    for i in range(y1-5,y1+5,1):
+        if(i>=0 and i<len(mp[0])):
+            for j in range(x1-5,x1+5,1):
+                
+                if(j>=0 and j<len(mp)):
+                    if( mp[i][j] == 1):
+                        pygame.draw.rect(screen2d, (255, 255, 255), pygame.Rect(
+                            gr[0]-58+j*factor-10,i*factor+10, factor, factor))
 
     #####################################
     # Render player
     #####################################
 
-    xi, yi = ac.CorToSrc(x, y, 16)
-    pygame.draw.circle(screen2d, (225, 0, 0), (xi*factor, yi*factor), 5)
+    #xi, yi = ac.CorToSrc(x, y, 16)
+    #pygame.draw.circle(screen2d, (225, 0, 0), (xi*factor, yi*factor), 5)
 
     #####################################
     #         Render Line

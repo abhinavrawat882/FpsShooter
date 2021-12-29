@@ -7,13 +7,13 @@ from pygame.locals import (
     KEYDOWN,
     QUIT,
 )
+import cv2
 import pygame
-import numpy as np
-import matplotlib.pyplot as plt
+FOV=25
 import math
 import GameEnigneLib.AngleCal as ac
 import GameEnigneLib.renderingFunctions as rf
-
+gr=(1280,720)
 ######################
 #INPUT EVENT HANDLER
 ######################
@@ -43,9 +43,10 @@ def startGame(pygame,screen,gameStack,settings):
     plx = 12  # player position in x
     ply = 7  # player position in y
     pla = 0  # player view angle
-
+    gnimg=pygame.image.load(r"C:\Users\abhin\Documents\Projects\FpsShooter\Assets\gun.png")
+    gnimg = pygame.transform.scale(gnimg,( 190,160))
     MapSize = [16, 16]
-
+    miniMapResolution=(48,48)
     mp = [[1, 1., 1., 1., 1., 1., 1., 1., 1., 1, 1., 1., 1., 1, 1., 1],
         [1, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 1., 1],
         [1, 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 1., 0., 0., 0., 1],
@@ -85,7 +86,11 @@ def startGame(pygame,screen,gameStack,settings):
         # the background with white
         screen.fill((0, 0, 0))
         #ln,inter,xe,ye = rf.lineTracer(plx, ply, pla, mp)
-        rf.threDRenderer(plx, ply, pla, screen, mp, pygame)
+        #pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(gr[0]-miniMapResolution[0]-12,gr[1]-miniMapResolution[1]-10,miniMapResolution[0]+10,miniMapResolution[1]+10 ))
+        #print(gr[0]-miniMapResolution[0]-12)
+        rf.threDRenderer(plx, ply, pla, screen, mp, pygame,gr,FOV)
+        screen.blit(gnimg,(gr[1]/2,(gr[0]-160)))
+        rf.miniMapRenderer(screen, plx, ply, pla, pygame, mp,gr,miniMapResolution)
         #break
 
         ########################################
@@ -99,8 +104,6 @@ def startGame(pygame,screen,gameStack,settings):
 
         ##### MINI MAP
         
-
-
 
 
 
