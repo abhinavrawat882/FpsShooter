@@ -5,6 +5,9 @@ rd = 0.0174533
 def threDRenderer(x, y, a, surface, mp, pygame,gr,FOV):
     lineTracer=lt.lineTracer
     # Define Variable :-
+    #######################################
+    #   Precalculate these 
+    #######################################
     gh = gr[1]
     gw = gr[0]
     wallHeightMul=1
@@ -15,6 +18,8 @@ def threDRenderer(x, y, a, surface, mp, pygame,gr,FOV):
     PlayerHeight = 0
     center = (gh/2)-1
 
+
+  
     ############################################
     #             FRAME DRAWING
     ###########################################
