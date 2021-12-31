@@ -39,7 +39,6 @@ def calc(FOV,pla,angularStep,gr):
                 abl=i-naea
             angleBeetweenLines[i].append(math.cos(abl**math.pi/180))    
             ######calculate line tracer here
-            ln,inter,xe,ye = lineTracer(x, y, la, mp)
             EndAngle -= AngularStep
             naea-=AngularStep
         i+=angularStep
