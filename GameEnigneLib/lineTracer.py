@@ -46,7 +46,7 @@ def checkY(x, y, Levelmap,a,inte):
         return True
 
 
-def lineTracer(x, y, lineAngle, Levelmap):  # 4.0
+def lineTracer(x, y,lineAngle, Levelmap, dy,dx,llpy,llpx):  # 4.0
     #print("Player Position")
     #print("X: ", x, " Y: ", y, " ANGLE: ", lineAngle)
     
@@ -54,12 +54,6 @@ def lineTracer(x, y, lineAngle, Levelmap):  # 4.0
     delx = 0
     mdy = y % 1
     mdx = x % 1
-    if(lineAngle==0,lineAngle==45,lineAngle==90,lineAngle==135,lineAngle==180,lineAngle==225,lineAngle==270,lineAngle==315):
-        lineAngle+=0.0001
-    rlineA=lineAngle*math.pi/180
-    dy = math.sin(rlineA)
-    dx = math.cos(rlineA)
-    
     if(lineAngle > 0 and lineAngle < 90):
         
         if(mdy > 0):
@@ -98,14 +92,8 @@ def lineTracer(x, y, lineAngle, Levelmap):  # 4.0
             delx = 1-(x % 1)
         else:
             delx = 0
-    #print("Initial Delta :")
-    #print("DX: ", delx, " DY: ", dely)
+
     lineLen = 0
-
-    llpy =abs( 1/math.sin(rlineA))
-    llpx = abs(1/math.cos(rlineA))
-
-    #print("llpy:  ", llpy, "  llpx: ", llpx, "  dy: ", dy, "  dx: ", dx,)
     tllpy = abs(llpy*dely)
     tllpx = abs(llpx*delx)
     intercept=-1

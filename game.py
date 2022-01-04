@@ -68,8 +68,7 @@ def startGame(pygame,screen,gameStack,settings):
     
     ## PRECALCULATE VARIABLES
     gunLocation=(gr[0]/2+30,gr[1]-230)
-    cs,si,noa= pc.calc(FOV,pla,angularStep)
-    
+    cs,si,noa,angleBeetweenLines,lineAngle,dy,dx,llpy,llpx= pc.calc(FOV,pla,angularStep,gr)
     MapSize = [16, 16]    
     miniMapResolution=(48,48)
     mp = [[1, 1., 1., 1., 1., 1., 1., 1., 1., 1, 1., 1., 1., 1, 1., 1],
@@ -89,10 +88,7 @@ def startGame(pygame,screen,gameStack,settings):
         [1, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1],
         [1, 1., 1., 1., 1., 1., 1., 1., 1., 1, 1., 1., 1., 1, 1., 1]]
     mp2=[[1,1,1,1],[1,0,0,1],[1,0,0,1],[1,1,1,1]]
-    
-    
-    
-    
+
     ########################################
     # .          GAME LOOP
     #########################################
@@ -117,7 +113,7 @@ def startGame(pygame,screen,gameStack,settings):
         #ln,inter,xe,ye = rf.lineTracer(plx, ply, pla, mp)
         #pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(gr[0]-miniMapResolution[0]-12,gr[1]-miniMapResolution[1]-10,miniMapResolution[0]+10,miniMapResolution[1]+10 ))
         #print(gr[0]-miniMapResolution[0]-12)
-        d3.threDRenderer(plx, ply, pla, screen, mp, pygame,gr,FOV)
+        d3.threDRenderer(plx, ply, screen,pygame,gr,lineAngle,angleBeetweenLines,ang,dy,dx,llpy,llpx,mp)
         screen.blit(gnimg,(gunLocation))
         d2.miniMapRenderer(screen, plx, ply, pla, pygame, mp,gr,miniMapResolution)
         #break
