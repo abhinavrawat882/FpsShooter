@@ -92,4 +92,4 @@ def calc(FOV,pla,angularStep,gr):
         ic+=angularStep
         index+=1
     # precalculate 3d engine and linetracer maths .
-    return(cs,si,len(cs)-1,angleBeetweenLines,lineAngle,dy,dx,llpy,llpx)
+    return(cs,si,len(cs)-1,angleBeetweenLines,lineAngle,dy,dx,llpy,llpx,angularStep)

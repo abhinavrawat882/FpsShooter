@@ -35,8 +35,9 @@ def checkY(x, y, Levelmap,a,inte):
     #print("MatLoc :")
     #print( y,x)
     try:
-        if(Levelmap[y][x] == 1):
+        if(Levelmap[y][x] > 0):
             return True
+            
         else:
             return False
     except:
@@ -124,8 +125,8 @@ def lineTracer(x, y,lineAngle, Levelmap, dy,dx,llpy,llpx):  # 4.0
             intercept=2
         #print("CRR")
         #print("X: ", x, " Y: ", y)
-        
-        if checkY(x, y, Levelmap,lineAngle,intercept):
+        IsIntercepted=checkY(x, y, Levelmap,lineAngle,intercept)
+        if IsIntercepted:
             break
 
     #print("Line Length", lineLen)

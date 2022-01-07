@@ -13,8 +13,7 @@ def threDRenderer(x, y, surface,pygame,gr,la,abl,index,dy,dx,llpy,llpx,mp):
     wallHeightMul=1
     PlayerHeight = 0
     center = (gh/2)-1
-
-
+    
   
     ############################################
     #             FRAME DRAWING
@@ -27,6 +26,12 @@ def threDRenderer(x, y, surface,pygame,gr,la,abl,index,dy,dx,llpy,llpx,mp):
         ###########################################
         
         ln,inter,xe,ye = lineTracer(x, y, la[index][i], mp,dy[index][i],dx[index][i],llpy[index][i],llpx[index][i])
+        
+        #enemy info template
+
+        #each enemy data template
+        #[TYPE OF ENEMY,ln,c1,c2,x,y]
+        
 
         ###########################################
         # .    Get perpendicular length
