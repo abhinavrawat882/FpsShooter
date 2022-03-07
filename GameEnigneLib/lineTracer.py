@@ -4,12 +4,13 @@ rd = 0.0174533
 
 
 def checkY(x, y, Levelmap,a,inte):
+    
     #print("Intercept : ",inte)
     x = int(x)
     #print("ABS Y : ",y)
     y = len(Levelmap)-1-y
     y=int(y)
-
+    
     #print("MAT Y :",y)
     if(inte==0):
         if(a<180 and a>0):
@@ -30,6 +31,8 @@ def checkY(x, y, Levelmap,a,inte):
             x-=1
         elif(a<360 and a>270):
             y==y
+    if(x>=len(Levelmap[0]) or y >=len(Levelmap)):
+        return True
     #if(inte==2):
         #print("Intercept")
     #print("MatLoc :")
@@ -41,9 +44,9 @@ def checkY(x, y, Levelmap,a,inte):
         else:
             return False
     except:
-        print("Exception occured")
-        print("loc :",x,y)
-        print("Angle ",a)
+        #print("Here")
+        #print("loc :",x,y)
+        #print("Angle ",a)
         return True
 
 
@@ -125,6 +128,8 @@ def lineTracer(x, y,lineAngle, Levelmap, dy,dx,llpy,llpx):  # 4.0
             intercept=2
         #print("CRR")
         #print("X: ", x, " Y: ", y)
+        #if lineLen>100:
+        #    return lineLen,intercept,x,y
         IsIntercepted=checkY(x, y, Levelmap,lineAngle,intercept)
         if IsIntercepted:
             break

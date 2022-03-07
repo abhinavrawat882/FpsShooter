@@ -10,7 +10,7 @@ def threDRenderer(x, y, surface,pygame,gr,la,abl,index,dy,dx,llpy,llpx,mp):
     #######################################
     gh = gr[1]
     gw = gr[0]
-    wallHeightMul=1
+    wallHeightMul=3
     PlayerHeight = 0
     center = (gh/2)-1
     
