@@ -3,6 +3,8 @@ from pickle import NONE
 import numpy as np
 import items 
 import game
+import matplotlib.pyplot as plt
+import pygame 
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -21,14 +23,15 @@ class levelEditor:
         self.level=levelObj
         self.objList={}
         self.crntInd=0
-        self.levelMap=np.zeros((levelRes))
+        self.levelMap=np.zeros((config['mapResolution']))
         #print(self.levelMap.shape)
         #print((levelRes[1],levelRes[0]))
         #self.levelMap[700][0]=1
         self.config=config
-        self.CurrentObject=None
-        self.CurrentIndex=0
-        self.itemProp=itemprop
+        self.strp=[2,2]
+        self.endPos=[0,0]
+        self.CurrentObject=['',0,(0,0,0)]
+        self.colorIt=[(0,0,0),(255,255,255),(255,0,0),(0,255,0)]
         #keyList=[K_UP,0
         #K_DOWN,1
         #K_LEFT,2
@@ -45,93 +48,47 @@ class levelEditor:
         #
         # BAD EXPLAINATION But LETS HOPE IT REMIDES ME WHAT THIS FUNCTION DOES......--\/-- .. 
         #########################################################
-    def drop(self,itemobj,loc):
-        self.crntInd+=1
-        self.objList[self.crntInd]=[itemobj,[loc[0],loc[1]]]
-        
-        self.CurrentObject=self.objList[self.crntInd][0]
-        self.CurrentIndex=self.crntInd
-        self.itemProp.setCuttentItem(itemobj,loc)
-        #print(loc[0]-self.config['itemListWidth'],loc[1]-self.config['itemPropHeight'])
-        self.objList[self.crntInd][0].level(self.levelMap,(loc[0]-self.config['itemListWidth'],loc[1]),self.crntInd)
+    def drop(self,itemp):
+        self.CurrentObject=itemp
     def draw(self,screen,config):
-        txt = self.config['font'].render(str(self.CurrentIndex), True, (0, 0, 255))
-        screen.blit(txt, (self.config['itemListWidth']+ 10 ,  10))
-        for i in range(1,self.crntInd+1):
-            if(i in self.objList):
-                self.objList[i][0].draw(screen,config,self.objList[i][1])
-    def inputMouse(self,mouseLoc,pmop,isCurrentObjectDragged):
-        ind=int(self.levelMap[mouseLoc[0]-self.config['itemListWidth']][mouseLoc[1]])
-        if(isCurrentObjectDragged==False):
-            if ind==0:
-                self.CurrentObject=None
-                self.CurrentIndex=0
-                return
-            self.CurrentObject=self.objList[ind][0]
-            self.CurrentIndex=ind
-            self.itemProp.setCuttentItem(self.CurrentObject,self.objList[self.CurrentIndex][1])
-        else:
-            if(self.CurrentObject==None):
-                return
-            self.CurrentObject.remove(self.levelMap,(self.objList[self.CurrentIndex][1][0]-self.config['itemListWidth'],self.objList[self.CurrentIndex][1][1]))
-            self.objList[self.CurrentIndex][1][0]+=mouseLoc[0]-pmop[0]
-            self.objList[self.CurrentIndex][1][1]+=mouseLoc[1]-pmop[1]
-            self.CurrentObject.level(self.levelMap,[self.objList[self.CurrentIndex][1][0]-self.config['itemListWidth'],self.objList[self.CurrentIndex][1][1]],self.CurrentIndex)
-
+        for i in range(0,self.config['mapResolution'][0]):
+            self.config['pygame'].draw.line(screen, (255, 255, 255), (i*self.config['mul']+self.config['itemListWidth'], 0), (i*self.config['mul']+self.config['itemListWidth'], self.config['mapResolution'][1]*self.config['mul']))
+        for i in range(0,self.config['mapResolution'][1]):
+            self.config['pygame'].draw.line(screen, (255, 255, 255), (self.config['itemListWidth'],i*self.config['mul']), ( self.config['itemListWidth']+self.config['mapResolution'][0]*self.config['mul'],i*self.config['mul']))
+        for i in range(0,self.config['mapResolution'][0]):
+            for y in range(0,self.config['mapResolution'][1]):
+                if(self.levelMap[i][y]!=0):
+                    self.config['pygame'].draw.rect(screen, self.colorIt[int(self.levelMap[i][y])], config['pygame'].Rect(i*self.config['mul']+self.config['itemListWidth'],y*self.config['mul'],self.config['mul'],self.config['mul']))
+    def inputMouse(self,mouseLoc):
+        loc=[(mouseLoc[0]-self.config['itemListWidth'])//self.config['mul'], mouseLoc[1]//self.config['mul']]
+        if(self.CurrentObject[1]==1):
+            self.strp=[loc[0]+0.5,loc[1]+0.5]
+        elif(self.CurrentObject[1]==2):
+            self.endPos=[loc[0]+0.5,loc[1]+0.5]
         
-
-
-    def inputKeyBoard(self,keyPressed):
-        #print('here')
-        #print(self.keyList[0])
-        if(self.CurrentObject==None):
-            #print('hello')
-            return
-        #print(keyPressed[self.keyList[0]])
-        #print(True in keyPressed)
-        if keyPressed[K_UP]  : #self.CurrentObject.prop['size'][1]+0.2<=40:
-            self.CurrentObject.prop['size'][1]+=0.2
-            
-            #print("key pressed up")
-        elif keyPressed[K_DOWN] and self.CurrentObject.prop['size'][1]-0.2>=14:
-            self.CurrentObject.prop['size'][1]-=0.2
-            #print("key pressed d")
-        elif keyPressed[K_LEFT] and self.CurrentObject.prop['size'][0]-0.2>=14:
-            self.CurrentObject.prop['size'][0]-=0.2
-            #print("key pressed l")
-        elif keyPressed[K_RIGHT]:# and self.CurrentObject.prop['size'][0]+0.2<=40:
-            self.CurrentObject.prop['size'][0]+=0.2
-            #print("key pressed r")
-        elif keyPressed[K_BACKSPACE]:
-            #print("delete karo")
-            if(self.CurrentObject!=None):
-                del self.objList[self.CurrentIndex]
-                self.CurrentObject=None
-                self.CurrentIndex=0
-                return
-        self.CurrentObject.level(self.levelMap,(self.objList[self.CurrentIndex][1][0]-self.config['itemListWidth'],self.objList[self.CurrentIndex][1][1]),self.CurrentIndex)
+        self.levelMap[loc[0]][loc[1]]=self.CurrentObject[1]
+    
 class itemList:
     def __init__(self,screenObj,configHash={}):
         ### Object of the screen on witch level will be rendered
-        self.ListCls = [items.block,items.circle, items.startPoint, items.levelEnd]
-        self.List = ['block','circle', 'startPoint', 'levelEnd']
+        self.List = [['block',1,(255,255,255)], ['startPoint',2,(255,0,0)], ['levelEnd',3,(0,255,0)]]
         self.screen=screenObj
         self.config=configHash
         self.itemElementheight=40
     def drag(self,loc):
-        #print("clicked")
         itno=loc[1]//self.itemElementheight
         if(itno>=5):
-            return None
-        return self.ListCls[itno-1]()
+            return ['none']
+        return self.List[itno-1]
         ##this object gets the location of the click and return the object     
     def draw(self):
         self.config['pygame'].draw.rect(self.screen, (10, 10, 10), self.config['pygame'].Rect(0, 0, self.config['itemListWidth'], self.config['GameResolution'][1]-self.config['GameResolution'][1]//2))
         txt = self.config['font'].render("ITEM LIST", True, (0, 0, 255))
         self.screen.blit(txt, (10,  10))
         for i in range(len(self.List)):
-            txt = self.config['font'].render(self.List[i], True, (0, 0, 255))
+            txt = self.config['font'].render(self.List[i][0], True, (0, 0, 255))
             self.screen.blit(txt, (10, self.itemElementheight*(i+2) - self.itemElementheight/2))
+            self.config['pygame'].draw.rect(self.screen, self.List[i][2], self.config['pygame'].Rect(100,self.itemElementheight*(i+2) - self.itemElementheight/2 , 10,10))
 class itemProp:
     def  __init__(self,screen,config):
         self.item=None
@@ -181,6 +138,8 @@ class MenueItems:
             # Changing the index so its usable by game 
             ############################################
             lvm=self.levelEditor.levelMap #level map 
+            #plt.imshow(lvm)
+            #plt.show()
             glm=np.zeros((lvm.shape[1],lvm.shape[0])) #game level map
             for i in range(len(lvm)):
                 for y in range(len(lvm[0])):
@@ -193,29 +152,16 @@ class MenueItems:
             for i in range(len(glm)):
                 glm[i][0]=1
                 glm[i][-1]=0
-            ###############################################
-            #REDUCE GAME MAP RESOLUTION 
-            # by 4 times
-            ################################################
-            rr=8
-            rglm=np.zeros((int(glm.shape[1]//rr),int(glm.shape[0]//rr))) #reduced game level map
-            rglmi=0
-            
-            for i in range(0,len(glm),rr):
-                rglmy=0
-                for y in range(0,len(glm[0]),rr):
-                    mx=0
-                    for xi in range(i,i+rr):
-                        for yi in range(y,y+rr):
-                            try:
-                                mx=max(glm[xi][yi],mx)
-                            except:
-                                mx=1
-                                break
-                    rglm[rglmi][rglmy]=mx
-            gobj=game.Game(rglm)
+            #plt.imshow(glm)
+            #plt.show()
+            self.strp=[2,2]
+            self.endPos=[0,0]
+            gobj=game.Game(glm,self.levelEditor.strp,self.levelEditor.endPos)
             gobj.startGame()
         elif(loc[1]<self.config['GameResolution'][1]//2+45):
+            #save game level
+            pygame.init()
+
             pass
         elif(loc[1]<self.config['GameResolution'][1]//2+70):
             pass

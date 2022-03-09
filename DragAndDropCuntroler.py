@@ -22,38 +22,16 @@ class cuntroler:
         # BUT if the click is over level editor .. it goes to pass through mode
         #
         #########################################################################
-        isLevlEditorClicked=True
-        
-        if(mouseClickStatus == True and self.isObjectDragged == False):
+
+        if(mouseClickStatus == True):
             if (mouseLoc[0] > self.itemListCor[0] and mouseLoc[1] > self.itemListCor[1] and mouseLoc[0] < self.itemListCor[2] and mouseLoc[1] < self.itemListCor[3]//2):
                 obj = self.itemList.drag(mouseLoc)
-                if(obj != None):
-                    self.isObjectDragged = True
-                    self.objectStored = obj
-                    self.config['pygame'].mouse.set_visible(False)
-                    self.rv="itemList"
+                if(obj[0] != 'none'):
+                    self.levelEditor.drop(obj)
             elif(mouseLoc[0] > self.levelEditorCor[0] and mouseLoc[1] > self.levelEditorCor[1] and mouseLoc[0] < self.levelEditorCor[2] and mouseLoc[1] < self.levelEditorCor[3]):
-                self.levelEditor.inputMouse(mouseLoc,pmpos,self.isLevelObjectDragged)
-                self.isLevelObjectDragged=True
-                self.config['pygame'].mouse.set_visible(False)
+                self.levelEditor.inputMouse(mouseLoc)
                 self.rv="levelEditor"
-                isLevlEditorClicked=False
             elif(mouseLoc[0] >0 and mouseLoc[1] > self.config["GameResolution"][1]//2 and mouseLoc[0] < self.config['itemListWidth'] and mouseLoc[1] < self.config['GameResolution'][1]):
                 print('True')
                 self.menue.Input(mouseLoc)
-        if(mouseClickStatus == True and self.isObjectDragged == True):
-            self.objectStored.draw(
-                self.screen, self.config, mouseLoc)
-        if(mouseClickStatus == False and self.isObjectDragged == True):
-            if(mouseLoc[0] > self.levelEditorCor[0] and mouseLoc[1] > self.levelEditorCor[1] and mouseLoc[0] < self.levelEditorCor[2] and mouseLoc[1] < self.levelEditorCor[3]):
-                #print('true')
-                self.levelEditor.drop(self.objectStored,mouseLoc)
-                self.rv="levelEditor"
-            self.isObjectDragged = False
-            self.objectStored = None
-            self.config['pygame'].mouse.set_visible(True)
-            
-        if(isLevlEditorClicked):
-            self.isLevelObjectDragged=False
-            self.config['pygame'].mouse.set_visible(True)
         return self.rv

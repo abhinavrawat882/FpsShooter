@@ -28,18 +28,18 @@ import copy
 
 
 class Game:
-    def __init__(self,level):
+    def __init__(self,level,strpos,endpos):
         self.playerSpeed=0.04
         self.running = True
-        self.FOV = 25
+        self.FOV = 45
         self.gr = (1280, 720)
-        self.playerSpeed = 5
-        self.angularStep=1
-        self.plx = 3  # player position in x
-        self.ply = 3  # player position in y
-        self.pla = 30  # player view angle
+        self.playerSpeed = 0.3
+        self.angularStep=3
+        self.plx = strpos[0]  # player position in x
+        self.ply = strpos[1]  # player position in y
+        self.pla = 0 # player view angle
         self.ang = 0
-        # FIRST PERSON GUN IMAGES
+        #      PERSON GUN IMAGES
         self.gnimg0 = pygame.image.load(
             r"Assets/Gun/gun.png")
         self.gnimg1 = pygame.image.load(

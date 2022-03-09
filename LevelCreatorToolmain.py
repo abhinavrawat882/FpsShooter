@@ -24,9 +24,13 @@ import keyPressHandler
 # GAME CONFIG
 ############################################
 pygame.init()
-gameConfig = {'GameResolution': [610, 580], 'font': pygame.font.SysFont(
+mapResolution=[50,50]
+mul=12
+gameConfig = { 'font': pygame.font.SysFont(
     None, 24), 'itemListWidth': 130, 'pygame': pygame, 'itemPropHeight': 100,'currentOSIS':None,'Exit' : True}#current on screen item selected
-
+gameConfig['GameResolution']=[gameConfig['itemListWidth']+mapResolution[0]*mul,gameConfig['itemPropHeight']+mapResolution[1]*mul]
+gameConfig['mapResolution']=mapResolution
+gameConfig['mul']=mul
 ############################################
 # PYGAME INIT
 ############################################
@@ -81,7 +85,6 @@ while gameConfig['Exit']:
     # Drag and drop cuntroler
     #####################################
     screenObjectPressed=DNDC.dnds(mousePos, mouseActivity[0],pmpos)
-    kph.pressHandler(screenObjectPressed,pressed_keys)
     try:
         fps=1/(time.time()-t)
     except:
@@ -91,3 +94,4 @@ while gameConfig['Exit']:
     pygame.display.flip()
     t=time.time()
     pmpos=mousePos
+
