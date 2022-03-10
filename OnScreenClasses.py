@@ -1,10 +1,13 @@
 
+### 10 MARCH 2022
+####################
 from pickle import NONE
 import numpy as np
 import items 
 import game
 import matplotlib.pyplot as plt
-import pygame 
+import time
+#import pygame as pg2
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -16,6 +19,9 @@ from pygame.locals import (
     K_SPACE,
     K_DELETE,
     K_BACKSPACE,
+    K_0,
+    K_a
+    
 )
 class levelEditor:
     def __init__(self,levelObj,levelRes,config,itemprop):
@@ -132,7 +138,7 @@ class MenueItems:
     def Input(self,loc):
         #print(True)
         #print(loc[1]-self.config['GameResolution'][1]//2+20)
-        if(loc[1]>self.config['GameResolution'][1]//2+20):
+        if(loc[1]<self.config['GameResolution'][1]//2+40):
             ############################################
             # Converting Engine Level To Game LEVEL
             # Changing the index so its usable by game 
@@ -152,16 +158,62 @@ class MenueItems:
             for i in range(len(glm)):
                 glm[i][0]=1
                 glm[i][-1]=0
-            #plt.imshow(glm)
-            #plt.show()
-            self.strp=[2,2]
-            self.endPos=[0,0]
-            gobj=game.Game(glm,self.levelEditor.strp,self.levelEditor.endPos)
+            plt.imshow(glm)
+            plt.show()
+            #self.strp=[2,2]
+            #self.endPos=[0,0]
+            self,levelEditor.self.CurrentObject=['',0,(0,0,0)]
+            gobj=game.Game(glm,[self.levelEditor.strp[1],self.levelEditor.strp[0]],[self.levelEditor.endPos[1],self.levelEditor.endPos[0]])
             gobj.startGame()
-        elif(loc[1]<self.config['GameResolution'][1]//2+45):
+        elif(loc[1]<self.config['GameResolution'][1]//2+70):
             #save game level
-            pygame.init()
+            running=True
+            levelName=""
+            preseed=0
+            presstime=0
+            while running:
+                for event in self.config['pygame'].event.get():
+                    if event.type == self.config['pygame'].QUIT:
+                        running=False
+                mousePos = self.config['pygame'].mouse.get_pos()
+                pressed_keys = self.config['pygame'].key.get_pressed()
+                self.config['pygame'].draw.rect(self.screen, (40,40,40), self.config['pygame'].Rect(0,0 , 400,200))
+                txt = self.config['font'].render(('Enter Level Name :'), True, (255, 255, 255))
+                self.screen.blit(txt, (10,10))
+                txt = self.config['font'].render((levelName), True, (255, 255, 255))
+                self.screen.blit(txt, (10,40))
+                txt = self.config['font'].render(('SAVE'), True, (255, 255, 255))
+                self.screen.blit(txt, (40,70))
+                self.config['pygame'].display.flip()
+                ###################################################
+                #KEY PRESS HANDLER 
+                ###################################################
+                # alphabet
+                if(preseed==0):
+                    for i in range(97,123):
+                        if(pressed_keys[i]):
+                            levelName=levelName+chr(ord('a')+(i-97))
+                            preseed=1
+                            presstime=time.time()
+                            break
+                    if(pressed_keys[K_BACKSPACE]):
+                        levelName=levelName[:-1]
+                        preseed=1
+                        presstime=time.time()
+                if(time.time()-presstime>=0.1):
+                    preseed=0
+                ###################################################
+                #CLICK EVENT HANDLER 
+                ###################################################
+                if(len(levelName)!=0 and self.config['pygame'].mouse.get_pressed()[0] and mousePos[0]>=40 and mousePos[1]>=70 and mousePos[0]<=80 and mousePos[1]<=100):
+                    
+                    running=False
+                    pass
 
+               
+
+
+                
             pass
         elif(loc[1]<self.config['GameResolution'][1]//2+70):
             pass

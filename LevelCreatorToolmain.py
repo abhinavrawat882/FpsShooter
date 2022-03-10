@@ -16,7 +16,16 @@ from pygame.locals import (
     KEYDOWN,
     QUIT,
     K_SPACE,
+    K_0,
+    K_9,
+    K_a,
+    K_z,
+
 )
+print( K_0,
+    K_9)
+print( K_a,
+    K_z)
 import OnScreenClasses
 import DragAndDropCuntroler
 import keyPressHandler
