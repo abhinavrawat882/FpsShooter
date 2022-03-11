@@ -1,7 +1,7 @@
 ########################################
 #        Library
 ########################################
-import os
+#import os
 from pdb import pm
 import time
 from turtle import onscreenclick
@@ -93,7 +93,7 @@ while gameConfig['Exit']:
     #####################################
     # Drag and drop cuntroler
     #####################################
-    screenObjectPressed=DNDC.dnds(mousePos, mouseActivity[0],pmpos)
+    screenObjectPressed=DNDC.dnds(mousePos, mouseActivity[0])
     try:
         fps=1/(time.time()-t)
     except:
@@ -102,5 +102,5 @@ while gameConfig['Exit']:
     screen.blit(txt, (gameConfig['GameResolution'][0]-80,10))
     pygame.display.flip()
     t=time.time()
-    pmpos=mousePos
+    
 

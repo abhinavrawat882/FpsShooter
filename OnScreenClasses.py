@@ -7,6 +7,7 @@ import items
 import game
 import matplotlib.pyplot as plt
 import time
+import os
 #import pygame as pg2
 from pygame.locals import (
     K_UP,
@@ -129,6 +130,12 @@ class itemProp:
             #pass
              #txt = self.config['font'].render(self.List[i], True, (0, 0, 255))
             #self.screen.blit(txt, (10, self.itemElementheight*(i+2) - self.itemElementheight/2))
+
+
+##############################################################################
+##
+##                          MAIN MENUE
+##############################################################################
 class MenueItems:
     def __init__(self,screen,config,levelEditorObj):
         self.screen=screen
@@ -162,9 +169,10 @@ class MenueItems:
             plt.show()
             #self.strp=[2,2]
             #self.endPos=[0,0]
-            self,levelEditor.self.CurrentObject=['',0,(0,0,0)]
+            
             gobj=game.Game(glm,[self.levelEditor.strp[1],self.levelEditor.strp[0]],[self.levelEditor.endPos[1],self.levelEditor.endPos[0]])
             gobj.startGame()
+            self.config['pygame'].display.set_mode(self.config['GameResolution'])
         elif(loc[1]<self.config['GameResolution'][1]//2+70):
             #save game level
             running=True
@@ -200,24 +208,167 @@ class MenueItems:
                         levelName=levelName[:-1]
                         preseed=1
                         presstime=time.time()
-                if(time.time()-presstime>=0.1):
+                if(time.time()-presstime>=0.15):
                     preseed=0
                 ###################################################
                 #CLICK EVENT HANDLER 
                 ###################################################
                 if(len(levelName)!=0 and self.config['pygame'].mouse.get_pressed()[0] and mousePos[0]>=40 and mousePos[1]>=70 and mousePos[0]<=80 and mousePos[1]<=100):
-                    
+                    crdl=os.listdir()
+                    if( "levels" not in crdl):
+                        os.mkdir("levels")
+                    LevelFile=open("levels/"+levelName+".lvl",'w')
+                    ### first write levels
+                    mpd=""
+                    for i in self.levelEditor.levelMap:
+                        for y in i:
+                            mpd+=str(int(y))+","
+                        mpd=mpd[:-1]+' '
+                    print(mpd)
+                    LevelFile.write(mpd)
+                    LevelFile.write(str(self.levelEditor.strp[0])+" "+str(self.levelEditor.strp[1])) 
+                    LevelFile.write(" "+str(self.levelEditor.endPos[0])+" "+str(self.levelEditor.endPos[1]))
+                    LevelFile.close()
+                    #self.strp=[2,2]
+                    #self.endPos=[0,0]
                     running=False
-                    pass
-
-               
-
-
-                
-            pass
-        elif(loc[1]<self.config['GameResolution'][1]//2+70):
-            pass
         elif(loc[1]<self.config['GameResolution'][1]//2+95):
+            #############################################################
+            # LOAD SCREEN
+            #############################################################
+            running=True
+            levelName=""
+            preseed=0
+            presstime=0
+            dirlst=os.listdir('levels')
+            self.config['pygame'].display.set_mode((1200,700))
+            dx=1200//5
+            dy=700//3
+            ofset=30
+            while running:
+                mousePos = self.config['pygame'].mouse.get_pos()
+                for event in self.config['pygame'].event.get():
+                    if event.type == self.config['pygame'].QUIT:
+                        running=False
+                for i in range(len(dirlst)):
+                    self.config['pygame'].draw.rect(self.screen, (60,60,60), self.config['pygame'].Rect(ofset+10+dx*(i%5),ofset+10+dy*(i//5),dx-10-ofset,dy-10-ofset))
+                    txt = self.config['font'].render(dirlst[i], True, (235, 235, 235))
+                    self.screen.blit(txt, (ofset+20+dx*(i%5),ofset+20+dy*(i//5)))
+                if(self.config['pygame'].mouse.get_pressed()[0]):
+                    x=mousePos[0]//dx
+                    y=mousePos[1]//dy
+                    ind=y*5 + x
+                    #print(ind)
+                    try:
+                        levelName=dirlst[ind]
+                    except:
+                        continue
+                    LevelFile=open("levels/"+levelName,'r')
+                    levelStr=LevelFile.read().split()#[1:-1]
+                    LevelFile.close()
+                    print(levelStr)
+                    posloc=levelStr[-4:]
+                    print(posloc)
+                    levelStr=levelStr[:-4]
+                    #print(levelStr)
+                    level=[]
+                    for i in levelStr:
+                        level.append(list(map(int,i.split(','))))
+                    #plt.imshow(level)
+                    #plt.show()
+                    #print("YESS")
+                    self.levelEditor.levelMap=np.array(level)
+                    self.levelEditor.strp=[float(posloc[0]),float(posloc[1])]
+                    self.levelEditor.endPos=[float(posloc[2]),float(posloc[3])]
+                    #self.strp=[2,2]
+                    #self.endPos=[0,0]
+                    running=False
+                    #except:
+                        #print("err")
+                    #    pass
+                self.config['pygame'].display.flip()
+            self.config['pygame'].display.set_mode((self.config['GameResolution']))
+        elif(loc[1]<self.config['GameResolution'][1]//2+115):
+            #############################################################
+            #          LEVEL PROGRESSION CONFIGURATOR
+            #############################################################
+            running=True
+            levelName=""
+            preseed=0
+            presstime=0
+            dirlst=os.listdir('levels')
+            self.config['pygame'].display.set_mode((1200,700))
+            dx=1200//5
+            dy=700//3
+            ofset=30
+            isDragged=False
+            draggedPoint=[]
+            cind=-1
+            connections=[]
+            while running:
+                self.screen.fill((0,0,0))
+                mousePos = self.config['pygame'].mouse.get_pos()
+                for event in self.config['pygame'].event.get():
+                    if event.type == self.config['pygame'].QUIT:
+                        running=False
+                for i in range(len(dirlst)):
+                    self.config['pygame'].draw.rect(self.screen, (60,60,60), self.config['pygame'].Rect(ofset+10+dx*(i%5),ofset+10+dy*(i//5),dx-10-ofset,dy-10-ofset))
+                    txt = self.config['font'].render(dirlst[i], True, (235, 235, 235))
+                    self.screen.blit(txt, (ofset+20+dx*(i%5),ofset+20+dy*(i//5)))
+                    #Start
+                    self.config['pygame'].draw.rect(self.screen, (0,255,0), self.config['pygame'].Rect(ofset+10+dx*(i%5),dy*((i//5)+1)-ofset-10,10,10))
+                    #END
+                    self.config['pygame'].draw.rect(self.screen, (0,0,255), self.config['pygame'].Rect(dx*((i%5)+1)-ofset-10,dy*((i//5)+1)-ofset-10,10,10))
+                
+                for i in connections:
+                    self.config['pygame'].draw.line(self.screen, (200,250,200), i[0][1], i[1][1],2)
+                    self.config['pygame'].draw.rect(self.screen, (255,0,0), self.config['pygame'].Rect(i[1][1][0],i[1][1][1],10,20))
+                ########################################################################
+                # CLICK EVENT HANDLER
+                #########################################################################
+                x=mousePos[0]//dx
+                y=mousePos[1]//dy
+                i=y*5 + x
+                #####################################################################
+                #               Dragging to connect end to start point
+                ######################################################################
+                if(self.config['pygame'].mouse.get_pressed()[0] and isDragged==False):
+                    #dx*((i%5)+1)-ofset-10,dy*((i//5)+1)-ofset-10,10,10)
+                    if(mousePos[0] > dx*((i%5)+1)-ofset-10 and mousePos[0] < dx*((i%5)+1)-ofset and  mousePos[1] > dy*((i//5)+1)-ofset-10 and mousePos[1] < dy*((i//5)+1)-ofset):
+                        isDragged=True
+                        cind=i
+                        #print("hola")
+                        draggedPoint=[ dx*((i%5)+1)-ofset-5,dy*((i//5)+1)-ofset-5]
+                        self.config['pygame'].draw.rect(self.screen, (0,255,0), self.config['pygame'].Rect(mousePos[0],mousePos[1],10,10))
+                #############################################################################\
+                #           IF A  END POINT IS CURRRENTLY BEING DRAGGED OR NOT
+                ##############################################################################
+                elif(self.config['pygame'].mouse.get_pressed()[0] and isDragged):
+                    try:
+                        self.config['pygame'].draw.line(self.screen, (200,250,200), draggedPoint, mousePos,2)
+                        self.config['pygame'].draw.rect(self.screen, (255,0,0), self.config['pygame'].Rect(mousePos[0],mousePos[1],10,20))
+                    except:
+                        pass
+                #################################################################################
+                #                   DROPPING END POINT 
+                #################################################################################
+                elif( not self.config['pygame'].mouse.get_pressed()[0] and isDragged):
+                    if(mousePos[0] > ofset+10+dx*(i%5) and mousePos[0] < ofset+10+dx*(i%5)+10 and  mousePos[1] > dy*((i//5)+1)-ofset-10 and mousePos[1] < dy*((i//5)+1)-ofset):
+                        connections.append([[cind,draggedPoint],[i,[ofset+10+dx*(i%5)+5,dy*((i//5)+1)-ofset-5]]])
+                        #draggedPoint=['start',[ ofset+10+dx*(i%5)+5,dy*((i//5)+1)-ofset-5]]
+                        #connections
+                        #self.config['pygame'].draw.rect(self.screen, (0,255,0), self.config['pygame'].Rect(mousePos[0],mousePos[1],10,10))
+                    #print(ind)
+                ########################################################################
+                #                   DRAGGING IS STOPED
+                ########################################################################
+
+                if self.config['pygame'].mouse.get_pressed()[0]==False:
+                    isDragged=False
+                    draggedPoint=[]
+                self.config['pygame'].display.flip()
+            self.config['pygame'].display.set_mode((self.config['GameResolution']))
+        elif(loc[1]<self.config['GameResolution'][1]//2+130):
             self.exitSatat=True
     def draw(self):
         txt = self.config['font'].render('Run Game', True, (235, 235, 235))
@@ -226,6 +377,10 @@ class MenueItems:
         self.screen.blit(txt, (10, self.config['GameResolution'][1]/2+45))
         txt = self.config['font'].render('Load', True, (235, 235, 235))
         self.screen.blit(txt, (10, self.config['GameResolution'][1]/2+70))
-        txt = self.config['font'].render('Exit', True, (235, 235, 235))
+        txt = self.config['font'].render('Level CMP', True, (235, 235, 235))
         self.screen.blit(txt, (10, self.config['GameResolution'][1]/2+95))
+        txt = self.config['font'].render('Compile', True, (235, 235, 235))
+        self.screen.blit(txt, (10, self.config['GameResolution'][1]/2+115))
+        txt = self.config['font'].render('Exit', True, (235, 235, 235))
+        self.screen.blit(txt, (10, self.config['GameResolution'][1]/2+130))
         return self.exitSatat

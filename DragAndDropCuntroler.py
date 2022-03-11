@@ -1,3 +1,4 @@
+import time
 class cuntroler:
     def __init__(self, screen, config, itemList,levelEditor,menue):
         self.config = config
@@ -15,15 +16,16 @@ class cuntroler:
         self.isLevelObjectDragged=False
         self.menue=menue
         self.rv='null'
-    def dnds(self, mouseLoc, mouseClickStatus,pmpos):  # Dnds= drag and drop status
+    def dnds(self, mouseLoc, mouseClickStatus):  # Dnds= drag and drop status
         #########################################################################
         # FUNCTION EXPLAINATION FOR FUTURE USE AND UNDERSTANDING :
         # IF Mouse is over item list and dragging something.... its in drag mode ... (running ite list code)
         # BUT if the click is over level editor .. it goes to pass through mode
         #
         #########################################################################
-
-        if(mouseClickStatus == True):
+        unblock=True
+        blockTime=0
+        if(mouseClickStatus and unblock):
             if (mouseLoc[0] > self.itemListCor[0] and mouseLoc[1] > self.itemListCor[1] and mouseLoc[0] < self.itemListCor[2] and mouseLoc[1] < self.itemListCor[3]//2):
                 obj = self.itemList.drag(mouseLoc)
                 if(obj[0] != 'none'):
@@ -32,6 +34,10 @@ class cuntroler:
                 self.levelEditor.inputMouse(mouseLoc)
                 self.rv="levelEditor"
             elif(mouseLoc[0] >0 and mouseLoc[1] > self.config["GameResolution"][1]//2 and mouseLoc[0] < self.config['itemListWidth'] and mouseLoc[1] < self.config['GameResolution'][1]):
-                print('True')
+                #print('True')
                 self.menue.Input(mouseLoc)
+                unblock=False
+                blockTime=time.time()
+        if(not unblock and time.time()-blockTime>=4):
+            unblock=True
         return self.rv

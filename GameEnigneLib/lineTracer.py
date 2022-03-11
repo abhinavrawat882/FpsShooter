@@ -40,7 +40,6 @@ def checkY(x, y, Levelmap,a,inte):
     try:
         if(Levelmap[y][x] > 0):
             return True
-            
         else:
             return False
     except:
@@ -105,8 +104,6 @@ def lineTracer(x, y,lineAngle, Levelmap, dy,dx,llpy,llpx):  # 4.0
         if(tllpy < tllpx):
             lineLen += tllpy
             tllpx -= tllpy
-
-
             x += tllpy*dx
             y += tllpy*dy
             tllpy = llpy
@@ -114,7 +111,6 @@ def lineTracer(x, y,lineAngle, Levelmap, dy,dx,llpy,llpx):  # 4.0
         elif(tllpy > tllpx):
             lineLen += tllpx
             tllpy -= tllpx
-
             x += tllpx*dx
             y += tllpx*dy
             tllpx = llpx
@@ -133,8 +129,6 @@ def lineTracer(x, y,lineAngle, Levelmap, dy,dx,llpy,llpx):  # 4.0
         IsIntercepted=checkY(x, y, Levelmap,lineAngle,intercept)
         if IsIntercepted:
             break
-
     #print("Line Length", lineLen)
     #print("Line Rendered")
-
     return lineLen,intercept,x,y

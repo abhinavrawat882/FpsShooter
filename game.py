@@ -33,8 +33,8 @@ class Game:
         self.running = True
         self.FOV = 45
         self.gr = (1280, 720)
-        self.playerSpeed = 0.3
-        self.angularStep=3
+        self.playerSpeed = 0.1
+        self.angularStep=4
         self.plx = strpos[0]  # player position in x
         self.ply = strpos[1]  # player position in y
         self.pla = 0 # player view angle
