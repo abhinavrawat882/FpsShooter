@@ -1,7 +1,7 @@
-
 ### 10 MARCH 2022
 ####################
 from pickle import NONE
+from xml.dom import NotFoundErr
 import numpy as np
 import items 
 import game
@@ -297,6 +297,20 @@ class MenueItems:
             preseed=0
             presstime=0
             dirlst=os.listdir('levels')
+            #######################################################
+            #importing Game Level Progression File
+            #######################################################
+            levelFile=None
+            connections=[]
+
+            ##############################
+            # SAVE CoNFIG FILE Architecture
+            #
+            #  "LevelName" : "Name of level With outgoing connection"
+            #
+            #
+            ###############################
+            
             self.config['pygame'].display.set_mode((1200,700))
             dx=1200//5
             dy=700//3
@@ -304,12 +318,57 @@ class MenueItems:
             isDragged=False
             draggedPoint=[]
             cind=-1
-            connections=[]
+            ###########################################################
+            # IMPORTING LEVEL NAME AND REFERENCES
+            ###########################################################
+            dict={} #level id  => level NAME
+            dicts={} # LEVEL NAME => LEVEL ID
+            
+            for i in range(len(dirlst)):
+                dict[i]=dirlst[i]
+                dicts[dirlst[i]]=i
+                connections.append(-1)
+            ###########################################################  
+
+
+
+
+
+            ###########################################################
+            # IMPORTING CONNECTIONS
+            ###########################################################
+            #try:
+            levelFile=open("levelProgression.lvl",'r')
+            levelLines=list(levelFile.read().split('-'))
+            print(levelLines)
+            
+            for i in levelLines:
+                if(i==''):
+                    break
+                levelFrom,levelTo=i.split()
+                connections[dicts[levelFrom]]=dicts[levelTo]
+            levelFile.close()
+            #except:
+            #    levelFile=open("levelProgression.lvl",'w')
+            #    levelFile.close()
+            ###########################################################
+
+
+
+            print(connections)
+            #############################################################
+            #                   BLUEPRINT LOOP
+            #############################################################
             while running:
                 self.screen.fill((0,0,0))
                 mousePos = self.config['pygame'].mouse.get_pos()
                 for event in self.config['pygame'].event.get():
                     if event.type == self.config['pygame'].QUIT:
+                        levelFile=open("levelProgression.lvl",'w')
+                        for i in range(len(connections)):
+                            if connections[i]!=-1:
+                                levelFile.write(dict[i]+" "+dict[connections[i]]+"-")
+                        levelFile.close()
                         running=False
                 for i in range(len(dirlst)):
                     self.config['pygame'].draw.rect(self.screen, (60,60,60), self.config['pygame'].Rect(ofset+10+dx*(i%5),ofset+10+dy*(i//5),dx-10-ofset,dy-10-ofset))
@@ -320,9 +379,15 @@ class MenueItems:
                     #END
                     self.config['pygame'].draw.rect(self.screen, (0,0,255), self.config['pygame'].Rect(dx*((i%5)+1)-ofset-10,dy*((i//5)+1)-ofset-10,10,10))
                 
-                for i in connections:
-                    self.config['pygame'].draw.line(self.screen, (200,250,200), i[0][1], i[1][1],2)
-                    self.config['pygame'].draw.rect(self.screen, (255,0,0), self.config['pygame'].Rect(i[1][1][0],i[1][1][1],10,20))
+                for i in range(len(connections)):
+                    if connections[i]!=-1:
+                        # SENDING :
+                        #[ dx*((i%5)+1)-ofset-5,dy*((i//5)+1)-ofset-5]
+                        # ACCEPTING :
+                        #[ofset+10+dx*(i%5)+5,dy*((i//5)+1)-ofset-5]
+                        #print("here")
+                        self.config['pygame'].draw.line(self.screen, (200,250,200), ( dx*((i%5)+1)-ofset-5,dy*((i//5)+1)-ofset-5), (ofset+10+dx*(connections[i]%5)+5,dy*((connections[i]//5)+1)-ofset-5),2)
+                        self.config['pygame'].draw.rect(self.screen, (255,0,0), self.config['pygame'].Rect(ofset+10+dx*(connections[i]%5)+5,dy*((connections[i]//5)+1)-ofset-5,10,20))
                 ########################################################################
                 # CLICK EVENT HANDLER
                 #########################################################################
@@ -337,7 +402,7 @@ class MenueItems:
                     if(mousePos[0] > dx*((i%5)+1)-ofset-10 and mousePos[0] < dx*((i%5)+1)-ofset and  mousePos[1] > dy*((i//5)+1)-ofset-10 and mousePos[1] < dy*((i//5)+1)-ofset):
                         isDragged=True
                         cind=i
-                        #print("hola")
+                        print(cind)
                         draggedPoint=[ dx*((i%5)+1)-ofset-5,dy*((i//5)+1)-ofset-5]
                         self.config['pygame'].draw.rect(self.screen, (0,255,0), self.config['pygame'].Rect(mousePos[0],mousePos[1],10,10))
                 #############################################################################\
@@ -354,22 +419,26 @@ class MenueItems:
                 #################################################################################
                 elif( not self.config['pygame'].mouse.get_pressed()[0] and isDragged):
                     if(mousePos[0] > ofset+10+dx*(i%5) and mousePos[0] < ofset+10+dx*(i%5)+10 and  mousePos[1] > dy*((i//5)+1)-ofset-10 and mousePos[1] < dy*((i//5)+1)-ofset):
-                        connections.append([[cind,draggedPoint],[i,[ofset+10+dx*(i%5)+5,dy*((i//5)+1)-ofset-5]]])
-                        #draggedPoint=['start',[ ofset+10+dx*(i%5)+5,dy*((i//5)+1)-ofset-5]]
-                        #connections
-                        #self.config['pygame'].draw.rect(self.screen, (0,255,0), self.config['pygame'].Rect(mousePos[0],mousePos[1],10,10))
-                    #print(ind)
+                        connections[cind]=i
+                        print(cind,i)
                 ########################################################################
                 #                   DRAGGING IS STOPED
                 ########################################################################
-
                 if self.config['pygame'].mouse.get_pressed()[0]==False:
                     isDragged=False
-                    draggedPoint=[]
-                self.config['pygame'].display.flip()
-            self.config['pygame'].display.set_mode((self.config['GameResolution']))
-        elif(loc[1]<self.config['GameResolution'][1]//2+130):
-            self.exitSatat=True
+                    draggedPoint=[] 
+                self.config['pygame'].display.flip() 
+            ############################################################################################
+
+
+            self.config['pygame'].display.set_mode((self. config['GameResolution']))
+        
+        elif loc[1]<self.config['GameResolution'][1]//2+130:
+            ####################################################################################
+            #           GAME COMPILER
+            ####################################################################################
+            
+            self.exitSatat=True 
     def draw(self):
         txt = self.config['font'].render('Run Game', True, (235, 235, 235))
         self.screen.blit(txt, (10, self.config['GameResolution'][1]/2+20))
